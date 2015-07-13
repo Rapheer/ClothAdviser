@@ -1,9 +1,12 @@
 package com.raphaelrosa.clothadviser;
 
+import android.location.LocationManager;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.raphaelrosa.clothadviser.DAO.WeatherDAO;
 
 
 public class HomeActivity extends ActionBarActivity {
@@ -12,6 +15,9 @@ public class HomeActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        WeatherDAO weatherController = new WeatherDAO();
+        weatherController.getWeather(getApplicationContext());
     }
 
     @Override
