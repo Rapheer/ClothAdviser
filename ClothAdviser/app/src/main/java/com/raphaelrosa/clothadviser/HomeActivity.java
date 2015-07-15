@@ -5,6 +5,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.raphaelrosa.clothadviser.DAO.WeatherDAO;
 
@@ -17,7 +18,11 @@ public class HomeActivity extends ActionBarActivity {
         setContentView(R.layout.activity_home);
 
         WeatherDAO weatherController = new WeatherDAO();
-        weatherController.getWeather(getApplicationContext());
+        try {
+            weatherController.getWeather(getApplicationContext());
+        }catch (Exception e){
+            Toast.makeText(HomeActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
