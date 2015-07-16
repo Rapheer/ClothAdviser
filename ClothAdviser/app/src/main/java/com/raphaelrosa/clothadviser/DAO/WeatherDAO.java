@@ -1,59 +1,52 @@
 package com.raphaelrosa.clothadviser.DAO;
 
 import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.raphaelrosa.clothadviser.HomeActivity;
 import com.raphaelrosa.clothadviser.Util.LocationService;
 
+import org.bitpipeline.lib.owm.OwmClient;
+import org.bitpipeline.lib.owm.WeatherData;
+import org.bitpipeline.lib.owm.WeatherStatusResponse;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.Buffer;
 import java.nio.charset.Charset;
 
 /**
  * Created by Raphael on 10/07/2015.
  */
-public class WeatherDAO {
+public class WeatherDAO extends AsyncTask<String, Void, Boolean>{
     private String apiKey = "a92ec11192c73f10743e65f1e3d7abbb";
 
+    @Override
+    protected Boolean doInBackground(String... params){
+        return false;
+    }
+
     public String getWeather(Context context) throws Exception{
-        BufferedReader rd = null;
-        try {
-            String url = "http://api.openweathermap.org/data/2.5/weather?";
+        OwmClient owm = new OwmClient();
+        LocationService location = new LocationService(context);
 
-            LocationService location = new LocationService(context);
-
-            if (location.canGetLocation()) {
-                double latitude = Math.ceil(location.getLatitude());
-                double longitude = Math.ceil(location.getLongitude());
-
-                url += "lat=" + latitude + "&lon=" + longitude;
-                Toast.makeText(context, url, Toast.LENGTH_SHORT).show();
-
-                URL urlObject = new URL(url);
-
-                rd = new BufferedReader(new InputStreamReader(urlObject.openStream()));
-                StringBuffer sb = new StringBuffer();
-                int cp;
-                char[] chars = new char[1024];
-                while ((cp = rd.read(chars)) != -1){
-                    sb.append(chars,0, cp);
-                }
-                String jsonStr = sb.toString();
-                JSONObject json = new JSONObject(jsonStr);
-                //Toast.makeText(context, jsonStr, Toast.LENGTH_SHORT).show();
-            } else {
-                location.showSettingsAlert();
+        if (location.canGetLocation()) {
+            WeatherStatusResponse currentWeather = owm.currentWeatherAroundPoint((float)location.getLatitude(),(float)location.getLongitude(),1);
+            if (currentWeather.hasWeatherStatus()){
+                WeatherData weather = currentWeather.getWeatherStatus().get(0);
+                Toast.makeText(context, weather.getTemp() + "", Toast.LENGTH_SHORT);
             }
-        }catch(Exception e){
-            throw e;
         }
         return "";
     }
-
 }
