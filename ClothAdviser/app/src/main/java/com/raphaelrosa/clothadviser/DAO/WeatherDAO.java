@@ -31,6 +31,7 @@ import java.nio.charset.Charset;
 public class WeatherDAO extends AsyncTask<String, Void, Boolean>{
     private Context context;
     private String apiKey = "a92ec11192c73f10743e65f1e3d7abbb";
+    private WeatherData weather;
 
     public WeatherDAO(Context context){
         this.context = context;
@@ -41,12 +42,12 @@ public class WeatherDAO extends AsyncTask<String, Void, Boolean>{
         try {
             OwmClient owm = new OwmClient();
             LocationService location = new LocationService(this.context);
-
+            float lat = (float)location.getLatitude();
+            float lon = (float)location.getLongitude();
             if (location.canGetLocation()) {
-                WeatherStatusResponse currentWeather = owm.currentWeatherAroundPoint(-23f, -46f, 10);
+                WeatherStatusResponse currentWeather = owm.currentWeatherAroundPoint(lat, lon, 10);
                 if (currentWeather.hasWeatherStatus()) {
-                    WeatherData weather = currentWeather.getWeatherStatus().get(0);
-                    Toast.makeText(this.context, weather.getTemp() + "", Toast.LENGTH_SHORT).show();
+                    this.weather = currentWeather.getWeatherStatus().get(0);
                 }
             }
             return true;
@@ -54,5 +55,20 @@ public class WeatherDAO extends AsyncTask<String, Void, Boolean>{
             Toast.makeText(this.context,e.getMessage(),Toast.LENGTH_LONG).show();
         }
         return false;
+    }
+
+    @Override
+    protected void onPostExecute(Boolean result) {
+        super.onPostExecute(result);
+
+        Toast.makeText(this.context,"temperatura = "+ getTemp(true),Toast.LENGTH_SHORT).show();
+    }
+
+    public double getTemp(Boolean celsius){
+        if (!celsius){
+            return this.weather.getTemp();
+        }
+
+        return (this.weather.getTemp() - 273.15);
     }
 }
