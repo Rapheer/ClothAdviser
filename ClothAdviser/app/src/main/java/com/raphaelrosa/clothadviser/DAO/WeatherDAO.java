@@ -29,24 +29,30 @@ import java.nio.charset.Charset;
  * Created by Raphael on 10/07/2015.
  */
 public class WeatherDAO extends AsyncTask<String, Void, Boolean>{
+    private Context context;
     private String apiKey = "a92ec11192c73f10743e65f1e3d7abbb";
+
+    public WeatherDAO(Context context){
+        this.context = context;
+    }
 
     @Override
     protected Boolean doInBackground(String... params){
-        return false;
-    }
+        try {
+            OwmClient owm = new OwmClient();
+            LocationService location = new LocationService(this.context);
 
-    public String getWeather(Context context) throws Exception{
-        OwmClient owm = new OwmClient();
-        LocationService location = new LocationService(context);
-
-        if (location.canGetLocation()) {
-            WeatherStatusResponse currentWeather = owm.currentWeatherAroundPoint((float)location.getLatitude(),(float)location.getLongitude(),1);
-            if (currentWeather.hasWeatherStatus()){
-                WeatherData weather = currentWeather.getWeatherStatus().get(0);
-                Toast.makeText(context, weather.getTemp() + "", Toast.LENGTH_SHORT);
+            if (location.canGetLocation()) {
+                WeatherStatusResponse currentWeather = owm.currentWeatherAroundPoint(-23f, -46f, 10);
+                if (currentWeather.hasWeatherStatus()) {
+                    WeatherData weather = currentWeather.getWeatherStatus().get(0);
+                    Toast.makeText(this.context, weather.getTemp() + "", Toast.LENGTH_SHORT).show();
+                }
             }
+            return true;
+        }catch (Exception e){
+            Toast.makeText(this.context,e.getMessage(),Toast.LENGTH_LONG).show();
         }
-        return "";
+        return false;
     }
 }

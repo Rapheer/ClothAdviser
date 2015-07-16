@@ -17,9 +17,9 @@ public class HomeActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        WeatherDAO weatherController = new WeatherDAO();
+        WeatherDAO weatherController = new WeatherDAO(HomeActivity.this);
         try {
-            weatherController.getWeather(getApplicationContext());
+            weatherController.execute();
         }catch (Exception e){
             Toast.makeText(HomeActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
         }
