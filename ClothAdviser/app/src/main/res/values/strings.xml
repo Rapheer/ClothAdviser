@@ -1,6 +1,29 @@
 <resources>
     <string name="app_name">ClothAdviser</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello World</string>
+    <string name="action_settings">Configurações</string>
+    <string name="action_search">Buscar</string>
+    <string name="drawer_open">Abrir</string>
+    <string name="drawer_close">Fechar</string>
+
+    <string name="nav_item_home">Principal</string>
+    <string name="nav_item_wardrobe">Minhas Roupas</string>
+    <string name="nav_item_looks">Meus Looks</string>
+    <string name="nav_item_store">Loja</string>
+    <string name="nav_item_about">Sobre</string>
+
+    <string-array name="nav_drawer_labels">
+        <item>@string/nav_item_home</item>
+        <item>@string/nav_item_looks</item>
+        <item>@string/nav_item_wardrobe</item>
+        <item>@string/nav_item_store</item>
+        <item>@string/nav_item_about</item>
+    </string-array>
+
+    <string name="title_home">Principal</string>
+    <string name="title_wardrobe">Minhas Roupas</string>
+    <string name="title_looks">Meus Looks</string>
+    <string name="title_store">Loja</string>
+    <string name="title_about">Sobre</string>
 </resources>
