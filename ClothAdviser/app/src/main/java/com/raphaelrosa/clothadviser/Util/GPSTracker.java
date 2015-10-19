@@ -13,25 +13,27 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 
+import com.raphaelrosa.clothadviser.Activity.Config;
+
 /**
- * Created by raphael on 12/07/2015.
+ * Created by Raphael on 21/07/2015.
  */
-public class LocationService extends Service implements LocationListener {
+public class GPSTracker  extends Service implements LocationListener {
 
     private final Context mContext;
 
-    // Flag for GPS status
+    // flag for GPS status
     boolean isGPSEnabled = false;
 
-    // Flag for network status
+    // flag for network status
     boolean isNetworkEnabled = false;
 
-    // Flag for GPS status
+    // flag for GPS status
     boolean canGetLocation = false;
 
-    Location location; // Location
-    double latitude; // Latitude
-    double longitude; // Longitude
+    Location location; // location
+    double latitude; // latitude
+    double longitude; // longitude
 
     // The minimum distance to change Updates in meters
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
@@ -42,28 +44,28 @@ public class LocationService extends Service implements LocationListener {
     // Declaring a Location Manager
     protected LocationManager locationManager;
 
-    public LocationService(Context context) {
+    public GPSTracker(Context context) {
         this.mContext = context;
         getLocation();
     }
 
     public Location getLocation() {
         try {
-            locationManager = (LocationManager) mContext
-                    .getSystemService(LOCATION_SERVICE);
+            locationManager = (LocationManager) Config.context.getSystemService(LOCATION_SERVICE);
 
-            // Getting GPS status
+            // getting GPS status
             isGPSEnabled = locationManager
                     .isProviderEnabled(LocationManager.GPS_PROVIDER);
 
-            // Getting network status
+            // getting network status
             isNetworkEnabled = locationManager
                     .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
 
             if (!isGPSEnabled && !isNetworkEnabled) {
-                // No network provider is enabled
+                // no network provider is enabled
             } else {
                 this.canGetLocation = true;
+                // First get location from Network Provider
                 if (isNetworkEnabled) {
                     locationManager.requestLocationUpdates(
                             LocationManager.NETWORK_PROVIDER,
@@ -79,7 +81,7 @@ public class LocationService extends Service implements LocationListener {
                         }
                     }
                 }
-                // If GPS enabled, get latitude/longitude using GPS Services
+                // if GPS Enabled get lat/long using GPS Services
                 if (isGPSEnabled) {
                     if (location == null) {
                         locationManager.requestLocationUpdates(
@@ -98,25 +100,23 @@ public class LocationService extends Service implements LocationListener {
                     }
                 }
             }
-        }
-        catch (Exception e) {
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return location;
     }
 
-
     /**
      * Stop using GPS listener
-     * Calling this function will stop using GPS in your app.
+     * Calling this function will stop using GPS in your app
      * */
     public void stopUsingGPS(){
         if(locationManager != null){
-            locationManager.removeUpdates(LocationService.this);
+            locationManager.removeUpdates(GPSTracker.this);
         }
     }
-
 
     /**
      * Function to get latitude
@@ -129,7 +129,6 @@ public class LocationService extends Service implements LocationListener {
         // return latitude
         return latitude;
     }
-
 
     /**
      * Function to get longitude
@@ -144,17 +143,16 @@ public class LocationService extends Service implements LocationListener {
     }
 
     /**
-     * Function to check GPS/Wi-Fi enabled
+     * Function to check GPS/wifi enabled
      * @return boolean
      * */
     public boolean canGetLocation() {
         return this.canGetLocation;
     }
 
-
     /**
-     * Function to show settings alert dialog.
-     * On pressing the Settings button it will launch Settings Options.
+     * Function to show settings alert dialog
+     * On pressing Settings button will lauch Settings Options
      * */
     public void showSettingsAlert(){
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
@@ -165,7 +163,7 @@ public class LocationService extends Service implements LocationListener {
         // Setting Dialog Message
         alertDialog.setMessage("GPS is not enabled. Do you want to go to settings menu?");
 
-        // On pressing the Settings button.
+        // On pressing Settings button
         alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog,int which) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -173,7 +171,7 @@ public class LocationService extends Service implements LocationListener {
             }
         });
 
-        // On pressing the cancel button
+        // on pressing cancel button
         alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
@@ -184,27 +182,26 @@ public class LocationService extends Service implements LocationListener {
         alertDialog.show();
     }
 
-
     @Override
     public void onLocationChanged(Location location) {
     }
 
-
+    @Override
     public void onProviderDisabled(String provider) {
     }
 
-
+    @Override
     public void onProviderEnabled(String provider) {
     }
-
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {
     }
 
-
     @Override
     public IBinder onBind(Intent arg0) {
         return null;
     }
+
 }
+

@@ -2,9 +2,12 @@ package com.raphaelrosa.clothadviser.DAO;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.raphaelrosa.clothadviser.Util.LocationService;
+import com.raphaelrosa.clothadviser.Activity.Config;
+import com.raphaelrosa.clothadviser.R;
+import com.raphaelrosa.clothadviser.Util.GPSTracker;
 
 import org.bitpipeline.lib.owm.OwmClient;
 import org.bitpipeline.lib.owm.WeatherData;
@@ -13,47 +16,49 @@ import org.bitpipeline.lib.owm.WeatherStatusResponse;
 /**
  * Created by Raphael on 10/07/2015.
  */
-public class WeatherDAO extends AsyncTask<String, Void, String>{
+public class WeatherDAO extends AsyncTask<String, Void, Float>{
     private Context context;
-    private String apiKey = "a92ec11192c73f10743e65f1e3d7abbb";
     private WeatherData weather;
+    private float[] location;
 
-    public WeatherDAO(Context context){
-        this.context = context;
+    public WeatherDAO(float[] location){
+        this.context = Config.context;
+        this.location = location;
     }
 
     @Override
-    protected String doInBackground(String... params){
+    protected Float doInBackground(String... params){
         try {
 
             OwmClient owm = new OwmClient();
-            LocationService location = new LocationService(this.context);
-            if (location.canGetLocation()) {
-                float lat =(float) Math.floor(location.getLatitude());
-                float lon = (float) Math.floor(location.getLongitude());
-                WeatherStatusResponse currentWeather = owm.currentWeatherAroundPoint(lat, lon, 10);
+            WeatherStatusResponse currentWeather = owm.currentWeatherAroundPoint(this.location[0], this.location[1], 10);
                 if (currentWeather.hasWeatherStatus()) {
                     this.weather = currentWeather.getWeatherStatus().get(0);
                 }
-                return lat + ", " + lon;
-            }
+                return this.weather.getTemp();
         }catch (Exception e){
-            return "";
+            return 0.0f;
         }
-        return "";
     }
 
     @Override
-    protected void onPostExecute(String result) {
+    protected void onPostExecute(Float result) {
         super.onPostExecute(result);
-
-        Toast.makeText(this.context,result,Toast.LENGTH_SHORT).show();
+        TextView t = (TextView) Config.context.findViewById(R.id.weatherLabel);
+        t.setText("Temperatura = " + this.getTemp(true));
+        TextView t2 = (TextView) Config.context.findViewById(R.id.rainLabel);
+        t2.append(" " + this.getRain());
     }
 
     public double getTemp(Boolean celsius){
         if (!celsius){
-            return Math.floor(this.weather.getTemp());
+            return Math.round(this.weather.getTemp());
         }
-        return Math.floor(this.weather.getTemp() - 273.15);
+        return Math.round(this.weather.getTemp() - 273.15);
+    }
+
+    public float getRain () {
+
+        return this.weather.getPressure();
     }
 }

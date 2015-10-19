@@ -1,19 +1,20 @@
 package com.raphaelrosa.clothadviser.Activity;
 
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v4.widget.DrawerLayout;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
-import android.support.v7.widget.Toolbar;
 
 import com.raphaelrosa.clothadviser.DAO.WeatherDAO;
 import com.raphaelrosa.clothadviser.R;
+import com.raphaelrosa.clothadviser.Util.GPSTracker;
 
 
 public class MainActivity extends ActionBarActivity implements DrawerFragment.FragmentDrawerListener {
@@ -28,6 +29,8 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.Fr
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Config.context = this;
+
         toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         setSupportActionBar(toolbar);
@@ -39,12 +42,6 @@ public class MainActivity extends ActionBarActivity implements DrawerFragment.Fr
         drawerFragment.setDrawerListener(this);
 
         displayView(0);
-        WeatherDAO weatherController = new WeatherDAO(MainActivity.this);
-        try {
-            weatherController.execute();
-        }catch (Exception e){
-            Toast.makeText(MainActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
-        }
     }
 
     @Override
